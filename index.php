@@ -6,6 +6,7 @@ var_dump($_SESSION['name']);
 
 //セッションの情報がなければ、ログインに戻る
 if (isset($_SESSION["id"]) && isset($_SESSION["name"])) {
+    $id = $_SESSION['id'];
     $name = $_SESSION["name"];
 } else {
     header('Location:login.php');
@@ -15,17 +16,21 @@ if (isset($_SESSION["id"]) && isset($_SESSION["name"])) {
 //メッセージの投稿
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $message = filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING);
+    var_dump($message);
     //db接続
     $db = dbconnect();
-    //
-    $stmt = $db->prepare('inser into posts(message,member_id) values(?,?)');
+    //statement
+    $stmt = $db->prepare('insert into posts(message,member_id) values(?,?)');
+
     if (!$stmt) {
+        var_dump("エラー1");
         die($db->error);
     }
 
     $stmt->bind_param('si', $message, $id);
     $success = $stmt->execute();
     if (!$success) {
+        var_dump("エラー2");
         die($db->error);
     }
 }
